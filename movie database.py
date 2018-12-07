@@ -9,7 +9,8 @@ br = webdriver.Firefox(executable_path='geckodriver.exe')
 app = QApplication([])
 window = QWidget()
 window.setWindowTitle("Movie information client")
-layout = QVBoxLayout()
+layout = QGridLayout()
+#layout = QVBoxLayout()
 
 class numb():
     num = 0
@@ -138,7 +139,7 @@ def b4():
 
 def b5():
     current = names[5].name
-    num,num = 5
+    num.num = 5
     searchKnown2(names[5].name)
 
 def b6():
@@ -161,26 +162,118 @@ def b9():
     num.num = 9
     searchKnown2(names[9].name)
 
+def showWish():
+    file = open("wishlist.txt","r")
+    wishlistitems.clear()
+    wishlistitemstrue.clear()
+    for movie in file:
+        print(str(movie[0:-1]))
+        wishlistitems.append(movie[0:-1])
+        wishlistitemstrue.append(movie)
+    print(wishlistitems)
+    print(wishlistitemstrue)
+    counter = 0
+    for i in range(10):
+        if (i <len(wishlistitems)):
+            if (counter<=9):
+                wishB[i].button.setText(wishlistitems[i])
+                wishB[i].button.show()
+                print(str(wishlistitems[counter])+" should be shown")
+            counter +=1
+        else:
+            wishB[i].button.hide()
+    window.setLayout(layout)
+    window.show()
+
+def delWish():
+    file = open("wishlist.txt","w")
+    indexf = 0
+    for each in wishlistitemstrue:
+        if (indexf != wishNum.num):
+            print(each)
+            file.write(each)
+        indexf+=1
+    file.close()
+
+
+def w0():
+    wishNum.num = 0
+    delWish()
+    showWish()
+
+def w1():
+    wishNum.num = 1
+    delWish()
+    showWish()
+
+def w2():
+    wishNum.num = 2
+    delWish()
+    showWish()
+
+def w3():
+    wishNum.num = 3
+    delWish()
+    showWish()
+
+def w4():
+    wishNum.num = 4
+    delWish()
+    showWish()
+
+def w5():
+    wishNum.num = 5
+    delWish()
+    showWish()
+
+def w6():
+    wishNum.num = 6
+    delWish()
+    showWish()
+
+def w7():
+    wishNum.num = 7
+    delWish()
+    showWish()
+
+def w8():
+    wishNum.num = 8
+    delWish()
+    showWish()
+
+def w9():
+    wishNum.num = 9
+    delWish()
+    showWish()
+
+
+
 num = numb()
+wishNum = numb() 
 current = ""
 lineEdit = QLineEdit(window)
-layout.addWidget(lineEdit)
+layout.addWidget(lineEdit,1,1)
 button = QPushButton('Search', window)
-layout.addWidget(button) 
+layout.addWidget(button,2,1)
+wishlistshow = QPushButton('Show wishlist', window)
+layout.addWidget(wishlistshow,1,3)
+wishlistshow.clicked.connect(showWish)
 names = [searchButton(),searchButton(),searchButton(),searchButton(),searchButton(),searchButton(),searchButton(),searchButton(),searchButton(),searchButton()]
 label = ["name","year", "rated", "released","run time", "genre", "director"]
+wishlistitems = []
+wishlistitemstrue = []
 button.clicked.connect(search)
 for each in range(10):
     names[each].button = QPushButton(str(each), window)
-    layout.addWidget(names[each].button)
+    layout.addWidget(names[each].button,each+3,1)
     names[each].button.hide()
 for each in range(len(label)):
     label[each] = QLabel("test")
-    layout.addWidget(label[each])
+    layout.addWidget(label[each],each+1,2)
     label[each].hide()
 wishlist = QPushButton('Add to wishlist', window)
 layout.addWidget(wishlist)
-wishlist.clicked.connect(addWish)
+wishlist.clicked.connect(addWish,1,12)
 wishlist.hide()
 names[0].button.clicked.connect(b0)
 names[1].button.clicked.connect(b1)
@@ -192,6 +285,23 @@ names[6].button.clicked.connect(b6)
 names[7].button.clicked.connect(b7)
 names[8].button.clicked.connect(b8)
 names[9].button.clicked.connect(b9)
+label1=  QLabel("Wish List:")
+layout.addWidget(label1,2,3)
+wishB =[searchButton(),searchButton(),searchButton(),searchButton(),searchButton(),searchButton(),searchButton(),searchButton(),searchButton(),searchButton()]
+for each in range(len(wishB)):
+    wishB[each].button = QPushButton("this is default and shouldn't be shown", window)
+    layout.addWidget(wishB[each].button,each+3,3)
+    wishB[each].button.hide()
+wishB[0].button.clicked.connect(w0)
+wishB[1].button.clicked.connect(w1)
+wishB[2].button.clicked.connect(w2)
+wishB[3].button.clicked.connect(w3)
+wishB[4].button.clicked.connect(w4)
+wishB[5].button.clicked.connect(w5)
+wishB[6].button.clicked.connect(w6)
+wishB[7].button.clicked.connect(w7)
+wishB[8].button.clicked.connect(w8)
+wishB[9].button.clicked.connect(w9)
 window.setLayout(layout)
 window.show()
 app.exec_()
