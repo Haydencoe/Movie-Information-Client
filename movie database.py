@@ -10,28 +10,38 @@ app = QApplication([])
 window = QWidget()
 window.setWindowTitle("Movie information client")
 layout = QGridLayout()
-#layout = QVBoxLayout()
 
 class numb():
     num = 0
 
+class Gbool():
+    second = False
+
 def printDetails(info):
     details = []
-    ##print(info.find_element_by_id("/Title").text)
     details.append(info.find_element_by_id("/Title").text)
-    ##print(info.find_element_by_id("/Year").text)
     details.append(info.find_element_by_id("/Year").text)
-    ##print(info.find_element_by_id("/Rated").text)
     details.append(info.find_element_by_id("/Rated").text)
-    ##print(info.find_element_by_id("/Released").text)
     details.append(info.find_element_by_id("/Released").text)
-    ##print(info.find_element_by_id("/Runtime").text)
     details.append(info.find_element_by_id("/Runtime").text)
-    ##print(info.find_element_by_id("/Genre").text)
     details.append(info.find_element_by_id("/Genre").text)
-    ##print(info.find_element_by_id("/Director").text)
     details.append(info.find_element_by_id("/Director").text)
     for each in range(len(label)):
+        label[each].setText(details[each])
+        label[each].show()
+
+def printDetails2(info):
+    details = []
+    details.append(info.find_element_by_id("/title").text)
+    details.append(info.find_element_by_id("/release_date").text)
+    details.append(info.find_element_by_id("/runtime").text)
+    details.append("production company:")
+    details.append(info.find_element_by_id("/production_companies/0/name").text)
+    details.append(info.find_element_by_id("/production_companies/0/origin_country").text)
+    details.append(info.find_element_by_id("/budget").text)
+    print("6")
+    for each in range(len(label)):
+        print(details[each])
         label[each].setText(details[each])
         label[each].show()
 
@@ -43,7 +53,6 @@ def addWish():
     file.close()
 
 
-#make menu for if know spelling or not
 def searchKnown():
     root = tk.Tk()
     end = False
@@ -59,58 +68,45 @@ def searchKnown():
 
 
 def searchKnown2(name):
-    ##current = name
     end = False
-    ##print("here i am")
-    br.get('http://www.omdbapi.com/?t='+ name.replace(" ", "+")+'&plot=full&apikey='+ key)
-    time.sleep(5)
-    printDetails(br)
+    if(secondSearch.second != True):
+        br.get('http://www.omdbapi.com/?t='+ name.replace(" ", "+")+'&plot=full&apikey='+ key)
+        time.sleep(5)
+        printDetails(br)
+    elif(secondSearch.second == True):
+        print("I have made it so searching TMDB")
+        br.get('https://api.themoviedb.org/3/search/movie?api_key=daff3ba38ac6d2788715a25a34d24d03&query='+ name.replace(" ", "+"))
+        time.sleep(5)
+        idMovie = br.find_element_by_id("/results/0/id").text
+        br.get("https://api.themoviedb.org/3/movie/"+idMovie[-3:len(idMovie)]+"?api_key=daff3ba38ac6d2788715a25a34d24d03")
+        print("i have made it to go to print details")
+        printDetails2(br)
     wishlist.show()
     end = True
-##    yes = ["y","Y","yes","Yes"]
-##    while (end != True):
-##        wish = input("Would you like to add this film to your to your wish list (y|Y|yes|Yes for yes)\n")
-##        if (wish in yes):
-##            addWish(name)
-##        end = True
 
 
 class searchButton():
     name= "toy story"
     button = None
     def searcher():
-##        print("in class funct")
         searchKnown2(name)
 
 
 def search():
     end = False
     while (end != True):
-        ##title = input("please input a title\n")
         title = str(lineEdit.text())
         br.get('http://www.omdbapi.com/?s='+ title.replace(" ", "+")+'&plot=full&apikey='+ key)
         time.sleep(5)
         results = []
         for i in range(10):
             results.append(br.find_element_by_id("/Search/"+str(i)+"/Title").text[7:-1])
-            ##print(str(i+1) +": "+results[i]+" ("+br.find_element_by_id("/Search/"+str(i)+"/Type").text[6:-1]+")")
             names[i].name = results[i]
             names[i].button.setText(results[i])
             names[i].button.show()
             window.setLayout(layout)
             window.show()
         end = True
-##        chose = False
-##        if (chose == False):
-##            option = input("which title woud you like information about?\n")
-##            if (int(option) in range(11)):
-##                name = results[int(option) - 1]
-##                ##searchKnown2(name)
-##                chose = True
-##                end = True
-##        ##end = input("would you like to search another movie N for no\n")
-##        ##if (end == "N"):
-##            ##end = True
 
 def b0():
     current = names[0].name
@@ -246,26 +242,38 @@ def w9():
     delWish()
     showWish()
 
+def search2():
+    secondSearch.second = True
+    search()
+
+def search1():
+    secondSearch.second = False
+    search()
 
 
+secondSearch = Gbool()
 num = numb()
 wishNum = numb() 
 current = ""
 lineEdit = QLineEdit(window)
 layout.addWidget(lineEdit,1,1)
-button = QPushButton('Search', window)
+button = QPushButton('Search IMDB', window)
 layout.addWidget(button,2,1)
+buttonS2 = QPushButton('Search TMDB', window)
+layout.addWidget(buttonS2,3,1)
 wishlistshow = QPushButton('Show wishlist', window)
-layout.addWidget(wishlistshow,1,3)
+buttonS2.clicked.connect(search2)
+layout.addWidget(wishlistshow,1,4)
 wishlistshow.clicked.connect(showWish)
 names = [searchButton(),searchButton(),searchButton(),searchButton(),searchButton(),searchButton(),searchButton(),searchButton(),searchButton(),searchButton()]
 label = ["name","year", "rated", "released","run time", "genre", "director"]
+label2 = ["name","year", "rated", "released","run time", "genre", "director"]
 wishlistitems = []
 wishlistitemstrue = []
-button.clicked.connect(search)
+button.clicked.connect(search1)
 for each in range(10):
     names[each].button = QPushButton(str(each), window)
-    layout.addWidget(names[each].button,each+3,1)
+    layout.addWidget(names[each].button,each+4,1)
     names[each].button.hide()
 for each in range(len(label)):
     label[each] = QLabel("test")
@@ -286,11 +294,11 @@ names[7].button.clicked.connect(b7)
 names[8].button.clicked.connect(b8)
 names[9].button.clicked.connect(b9)
 label1=  QLabel("Wish List:")
-layout.addWidget(label1,2,3)
+layout.addWidget(label1,2,4)
 wishB =[searchButton(),searchButton(),searchButton(),searchButton(),searchButton(),searchButton(),searchButton(),searchButton(),searchButton(),searchButton()]
 for each in range(len(wishB)):
     wishB[each].button = QPushButton("this is default and shouldn't be shown", window)
-    layout.addWidget(wishB[each].button,each+3,3)
+    layout.addWidget(wishB[each].button,each+3,4)
     wishB[each].button.hide()
 wishB[0].button.clicked.connect(w0)
 wishB[1].button.clicked.connect(w1)
