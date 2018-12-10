@@ -1,6 +1,7 @@
 from selenium import webdriver
 import time
 import json
+import random
 from functools import partial
 from PyQt5.QtWidgets import *
 
@@ -39,15 +40,12 @@ def printDetails2(info):
     details.append(info.find_element_by_id("/production_companies/0/name").text)
     details.append(info.find_element_by_id("/production_companies/0/origin_country").text)
     details.append(info.find_element_by_id("/budget").text)
-    print("6")
     for each in range(len(label)):
-        print(details[each])
         label[each].setText(details[each])
         label[each].show()
 
 def addWish():
     file = open("wishlist.txt","a+")
-    print(str(num.num))
     file.writelines(names[num.num].name+"\n")
     wishlist.hide()
     file.close()
@@ -74,12 +72,10 @@ def searchKnown2(name):
         time.sleep(5)
         printDetails(br)
     elif(secondSearch.second == True):
-        print("I have made it so searching TMDB")
         br.get('https://api.themoviedb.org/3/search/movie?api_key=daff3ba38ac6d2788715a25a34d24d03&query='+ name.replace(" ", "+"))
         time.sleep(5)
         idMovie = br.find_element_by_id("/results/0/id").text
         br.get("https://api.themoviedb.org/3/movie/"+idMovie[-3:len(idMovie)]+"?api_key=daff3ba38ac6d2788715a25a34d24d03")
-        print("i have made it to go to print details")
         printDetails2(br)
     wishlist.show()
     end = True
@@ -107,6 +103,19 @@ def search():
             window.setLayout(layout)
             window.show()
         end = True
+
+def randomS():
+    end = False
+    while(end == False):
+        movieID = ""
+        for i in range(7):
+            movieID += str(random.randint(0,9))
+        br.get('http://www.omdbapi.com/?i=tt'+ str(movieID)+'&plot=full&apikey='+ key)
+        time.sleep(5)
+        if(br.find_element_by_id("/Response").text == 'Response "True"'):
+            end = True
+    printDetails(br)
+    wishlist.show()
 
 def b0():
     current = names[0].name
@@ -163,18 +172,14 @@ def showWish():
     wishlistitems.clear()
     wishlistitemstrue.clear()
     for movie in file:
-        print(str(movie[0:-1]))
         wishlistitems.append(movie[0:-1])
         wishlistitemstrue.append(movie)
-    print(wishlistitems)
-    print(wishlistitemstrue)
     counter = 0
     for i in range(10):
         if (i <len(wishlistitems)):
             if (counter<=9):
                 wishB[i].button.setText(wishlistitems[i])
                 wishB[i].button.show()
-                print(str(wishlistitems[counter])+" should be shown")
             counter +=1
         else:
             wishB[i].button.hide()
@@ -186,7 +191,6 @@ def delWish():
     indexf = 0
     for each in wishlistitemstrue:
         if (indexf != wishNum.num):
-            print(each)
             file.write(each)
         indexf+=1
     file.close()
@@ -257,10 +261,13 @@ wishNum = numb()
 current = ""
 lineEdit = QLineEdit(window)
 layout.addWidget(lineEdit,1,1)
-button = QPushButton('Search IMDB', window)
+button = QPushButton('Search OMDB', window)
 layout.addWidget(button,2,1)
 buttonS2 = QPushButton('Search TMDB', window)
 layout.addWidget(buttonS2,3,1)
+buttonS3 = QPushButton('Search Random Movie', window)
+layout.addWidget(buttonS3,4,1)
+buttonS3.clicked.connect(randomS)
 wishlistshow = QPushButton('Show wishlist', window)
 buttonS2.clicked.connect(search2)
 layout.addWidget(wishlistshow,1,4)
@@ -273,7 +280,7 @@ wishlistitemstrue = []
 button.clicked.connect(search1)
 for each in range(10):
     names[each].button = QPushButton(str(each), window)
-    layout.addWidget(names[each].button,each+4,1)
+    layout.addWidget(names[each].button,each+5,1)
     names[each].button.hide()
 for each in range(len(label)):
     label[each] = QLabel("test")
